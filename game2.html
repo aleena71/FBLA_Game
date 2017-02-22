@@ -1,0 +1,133 @@
+<html>
+<head>
+  <title>FBLA Sewanhaka</title>
+  <link rel="stylesheet" type="text/css" href="game.css">
+  <style>
+    canvas {
+        border:1px solid #d3d3d3;
+        background-image: url("bgimg.png");
+    }
+  </style>
+  <script>
+    var myGamePiece;
+    var myScore;
+    var myObstacles = [];
+    function startGame() {
+        myGamePiece = new component(50, 50, "sman2.png", 20, 120, "image");
+        myScore = new component("15px", "Consolas", "white", 450, 40, "text");
+        myGameArea.start();
+        /* myObstacle = new component(20, 20, "blue", 300, 0); */
+    }
+    var myGameArea = {
+        canvas : document.createElement("canvas"),
+        start : function() {
+            this.canvas.width = 900;
+            this.canvas.height = 600;
+            this.context = this.canvas.getContext("2d");
+            document.body.insertBefore(this.canvas, document.body.childNodes[0]);
+            this.frameNo = 0;
+/*checks if a key is pressed. when key is not pressed, "key" is set to false*/
+            this.interval = setInterval(updateGameArea, 20); /*updates display
+            every 20th millisecond aka 50 times per second*/
+                  window.addEventListener('keydown', function (e) { /* sets keyboard as controller */
+                      myGameArea.key = e.keyCode;
+                  })
+                  window.addEventListener('keyup', function (e) { /* doesnt move when key isn't pressed */
+                      myGameArea.key = false;
+                  })
+              },
+              clear : function() {
+                  this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+              },
+              stop : function() {
+                  clearInterval(this.interval);
+              }
+          }
+/*end of key pressed defining*/
+    function everyinterval(n) {
+        if ((myGameArea.frameNo / n) % 1 == 0) {return true;}
+        return false;
+    }
+/*appearance and movement of sprite*/
+    function component(width, height, color, x, y, type) {
+      this.type = type;
+    if (type == "image") { /*both if statements about image type is necessary*/
+        this.image = new Image();
+        this.image.src = color;
+    }
+      this.gamearea = myGameArea;
+      this.width = width;
+      this.height = height;
+      this.speedX = 0;
+      this.speedY = 0;
+      this.x = x;
+      this.y = y;
+      this.update = function() {
+        ctx = myGameArea.context;
+        if (type == "image") {
+            ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
+        }
+        else if (this.type == "text") {
+            ctx.font = this.width + " " + this.height;
+            ctx.fillStyle = color;
+            ctx.fillText(this.text, this.x, this.y);
+        }
+        else {
+            ctx.fillStyle = color;
+            ctx.fillRect(this.x, this.y, this.width, this.height);
+        }
+    }
+          /*speed is changing by 1 per movement*/
+      this.newPos = function() {
+          this.x += this.speedX; /* this.x = this.x + this.speedx */
+          this.y += this.speedY;
+      }
+  }
+      /*movement of sprite*/
+      function updateGameArea() {
+      var x, y;
+      myGameArea.clear();
+      myGameArea.frameNo += 1;
+      if (myGameArea.frameNo == 1 || everyinterval(150)) { /*OBSTACLE movement*/
+            x = Math.floor((Math.random() * 900) + 1); /*sets x to random digit between 1 - 900*/
+            y = 0; /*falling obstacles will start from top and continute to bottom*/
+            myObstacles.push(new component(20, 20, "green", x, y));
+        }
+        for (i = 0; i < myObstacles.length; i += 1) {
+            myObstacles[i].y += 2; /*soeed of obstacles - adds 2 to y value*/
+            myObstacles[i].update();
+        }
+      myGamePiece.speedX = 0;
+      myGamePiece.speedY = 0;
+      if (myGameArea.key && myGameArea.key == 37) {myGamePiece.speedX = -1; }
+      if (myGameArea.key && myGameArea.key == 39) {myGamePiece.speedX = 1; }
+      if (myGameArea.key && myGameArea.key == 38) {myGamePiece.speedY = -1; }
+      if (myGameArea.key && myGameArea.key == 40) {myGamePiece.speedY = 1; }
+      if (myGameArea.key && myGameArea.key == 32) { /* space bar */
+        myGamePiece.image.src = "rmr2.png";
+      }
+      if (myGameArea.key && myGameArea.key != 32) { /* not space bar */
+        myGamePiece.image.src = "sman2.png";
+      }
+      if (myGameArea.key && myGameArea.key == 27) { /* stops when esc is pressed */
+        myGameArea.stop();
+      }
+      myScore.text="SCORE: " + myGameArea.frameNo;
+      myScore.update();
+      myGamePiece.newPos();
+      myGamePiece.update();
+  }
+  /*
+  var number = 0;
+  function Score() {
+    if (myGamePiece.x == myObstacle.x && myGamePiece.x == myObstacle.y) {
+      number += 1;
+      myScore.text="SCORE: " + number;
+    }
+  } */
+  </script>
+</head>
+<body onload="startGame()">
+
+</body>
+</html>
