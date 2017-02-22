@@ -119,7 +119,7 @@
           myObstacles.push(new component(20, 20, "green", x, y));
         }
       }
-      for (i = 0; i < myObstacles.length; i += 1) {}
+      for (i = 0; i < myObstacles.length; i += 1) {
           myObstacles[i].y -= 2; /*speed of obstacles - subtracts 2 to y value to make it go up*/
           myObstacles[i].update();
           myObstacles[i].newPos();
