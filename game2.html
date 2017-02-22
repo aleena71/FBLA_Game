@@ -113,10 +113,10 @@
       if (myGameArea.key && myGameArea.key == 37) {myGamePiece.speedX = -1; }
       if (myGameArea.key && myGameArea.key == 39) {myGamePiece.speedX = 1; }
       if (myGameArea.key && myGameArea.key == 32) { /* space bar */
-        if (firingrate > 50) {
-          x = myGamePiece.x + 15; /*sets x to random digit between 1 - 900*/
+        if (firingrate < 100) {
+          x = myGamePiece.x + 20; /*sets x to random digit between 1 - 900*/
           y = 500; /*falling obstacles will start from top and continute to bottom*/
-          myObstacles.push(new component(20, 20, "green", x, y));
+          myObstacles.push(new component(10, 10, "green", x, y));
         }
       }
       for (i = 0; i < myObstacles.length; i += 1) {
@@ -125,7 +125,6 @@
           myObstacles[i].newPos();
       }
       if (myGameArea.key && myGameArea.key != 32) { /* not space bar */
-
       }
       if (myGameArea.key && myGameArea.key == 27) { /* stops when esc is pressed */
         myGameArea.stop();
