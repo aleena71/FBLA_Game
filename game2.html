@@ -13,7 +13,7 @@
     var myScore;
     var myObstacles = [];
     function startGame() {
-        myGamePiece = new component(50, 50, "sman2.png", 20, 120, "image");
+        myGamePiece = new component(50, 50, "spaceship.png", 450, 500, "image");
         myScore = new component("15px", "Consolas", "white", 450, 40, "text");
         myGameArea.start();
         /* myObstacle = new component(20, 20, "blue", 300, 0); */
@@ -82,6 +82,24 @@
           this.x += this.speedX; /* this.x = this.x + this.speedx */
           this.y += this.speedY;
       }
+      this.crashWith = function(otherobj) {
+        var myleft = this.x;
+        var myright = this.x + (this.width);
+        var mytop = this.y;
+        var mybottom = this.y + (this.height);
+        var otherleft = otherobj.x;
+        var otherright = otherobj.x + (otherobj.width);
+        var othertop = otherobj.y;
+        var otherbottom = otherobj.y + (otherobj.height);
+        var crash = true;
+        if ((mybottom < othertop) ||
+               (mytop > otherbottom) ||
+               (myright < otherleft) ||
+               (myleft > otherright)) {
+           crash = false;
+        }
+        return crash;
+    }
   }
       /*movement of sprite*/
       function updateGameArea() {
@@ -101,13 +119,14 @@
       myGamePiece.speedY = 0;
       if (myGameArea.key && myGameArea.key == 37) {myGamePiece.speedX = -1; }
       if (myGameArea.key && myGameArea.key == 39) {myGamePiece.speedX = 1; }
-      if (myGameArea.key && myGameArea.key == 38) {myGamePiece.speedY = -1; }
-      if (myGameArea.key && myGameArea.key == 40) {myGamePiece.speedY = 1; }
+
       if (myGameArea.key && myGameArea.key == 32) { /* space bar */
-        myGamePiece.image.src = "rmr2.png";
+        x = Math.floor((Math.random() * 900) + 1); /*sets x to random digit between 1 - 900*/
+        y = 0; /*falling obstacles will start from top and continute to bottom*/
+          myObstacles.push(new component(20, 20, "green", x, y));
       }
       if (myGameArea.key && myGameArea.key != 32) { /* not space bar */
-        myGamePiece.image.src = "sman2.png";
+
       }
       if (myGameArea.key && myGameArea.key == 27) { /* stops when esc is pressed */
         myGameArea.stop();
