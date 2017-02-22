@@ -12,6 +12,7 @@
     var myGamePiece;
     var myScore;
     var myObstacles = [];
+    var firingrate = 0;
     function startGame() {
         myGamePiece = new component(50, 50, "spaceship.png", 450, 500, "image");
         myScore = new component("15px", "Consolas", "white", 450, 40, "text");
@@ -110,9 +111,8 @@
       myGamePiece.speedY = 0;
       if (myGameArea.key && myGameArea.key == 37) {myGamePiece.speedX = -1; }
       if (myGameArea.key && myGameArea.key == 39) {myGamePiece.speedX = 1; }
-      var firingrate = 0;
       if (myGameArea.key && myGameArea.key == 32) { /* space bar */
-        if (firingrate < 50) {
+        if (firingrate > 50) {
           x = myGamePiece.x + 15; /*sets x to random digit between 1 - 900*/
           y = 500; /*falling obstacles will start from top and continute to bottom*/
           myObstacles.push(new component(20, 20, "green", x, y));
