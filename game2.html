@@ -12,7 +12,6 @@
     var myGamePiece;
     var myScore;
     var myObstacles = [];
-    var firingrate = 0;
     function startGame() {
         myGamePiece = new component(50, 50, "spaceship.png", 450, 500, "image");
         myScore = new component("15px", "Consolas", "white", 450, 40, "text");
@@ -105,7 +104,6 @@
       /*movement of sprite*/
       function updateGameArea() {
       var x, y;
-      firingrate += 1;
       myGameArea.clear();
       myGameArea.frameNo += 1;
       myGamePiece.speedX = 0;
@@ -113,16 +111,17 @@
       if (myGameArea.key && myGameArea.key == 37) {myGamePiece.speedX = -1; }
       if (myGameArea.key && myGameArea.key == 39) {myGamePiece.speedX = 1; }
       if (myGameArea.key && myGameArea.key == 32) { /* space bar */
-        if (firingrate < 100) {
-          x = myGamePiece.x + 20; /*sets x to random digit between 1 - 900*/
-          y = 500; /*falling obstacles will start from top and continute to bottom*/
-          myObstacles.push(new component(10, 10, "green", x, y));
-        }
+        x = myGamePiece.x + 20; /*sets x to ship's x + 20*/
+        y = 500;
+        myObstacles.push(new component(10, 10, "green", x, y));
+        myObstacles[i].update();
+        myGamePiece.update();
+        myObstacles[i].y.update();
       }
       for (i = 0; i < myObstacles.length; i += 1) {
-          myObstacles[i].y -= 2; /*speed of obstacles - subtracts 2 to y value to make it go up*/
-          myObstacles[i].update();
+          myObstacles[i].speedY -= 1; /*speed of obstacles - subtracts 2 to y value to make it go up*/
           myObstacles[i].newPos();
+          myObstacles[i].update();
       }
       if (myGameArea.key && myGameArea.key != 32) { /* not space bar */
       }
