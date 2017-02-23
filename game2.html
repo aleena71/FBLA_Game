@@ -3,20 +3,26 @@
   <title>FBLA Sewanhaka</title>
   <link rel="stylesheet" type="text/css" href="game.css">
   <style>
-    canvas {
-        border:1px solid #d3d3d3;
-        background-image: url("bgimg.png");
+  canvas {
+      border:1px solid #d3d3d3;
+      background-color: black;
+      padding: 0;
+      margin: auto;
+      display: block;
     }
   </style>
   <script>
     var myGamePiece;
     var myScore;
     var myObstacles = [];
+    var alien = [];
+    var scorenum;
     function startGame() {
         myGamePiece = new component(50, 50, "spaceship.png", 450, 500, "image");
-        myScore = new component("15px", "Consolas", "white", 450, 40, "text");
+        myScore = new component("15px", "Consolas", "white", 450, 20, "text");
         myGameArea.start();
         /* myObstacle = new component(20, 20, "blue", 300, 0); */
+
     }
     var myGameArea = {
         canvas : document.createElement("canvas"),
@@ -106,14 +112,38 @@
       var x, y;
       myGameArea.clear();
       myGameArea.frameNo += 1;
+
+      if (myGameArea.frameNo == 1) { /*OBSTACLE movement*/
+          x = 5;
+          y = 40;
+          alien.push(new component(30, 30, "alien.png", x, y, "image"));
+          while (x < 900) {
+            x += 30;
+            alien.push(new component(30, 30, "alien.png", x, y, "image"));
+          }
+      }
+      for (i = 0; i < alien.length; i++) {
+        alien[i].update();
+        alien[i].newPos();
+          /* if (alien.length > 20) {
+              x = 5;
+              y += 40;
+              alien.push(new component(30, 30, "alien.png", x, y, "image"));
+              while (x < 900) {
+                x += 30;
+                alien.push(new component(30, 30, "alien.png", x, y, "image"));
+              }
+            } */
+        }
       myGamePiece.speedX = 0;
       myGamePiece.speedY = 0;
+      scorenum = 0;
       if (myGameArea.key && myGameArea.key == 37) {myGamePiece.speedX = -1; }
       if (myGameArea.key && myGameArea.key == 39) {myGamePiece.speedX = 1; }
       if (myGameArea.key && myGameArea.key == 32) { /* space bar */
         x = myGamePiece.x + 20; /*sets x to ship's x + 20*/
         y = 500;
-        myObstacles.push(new component(10, 10, "green", x, y));
+        myObstacles.push(new component(10, 10, "lightgreen", x, y));
         myObstacles[i].update();
         myGamePiece.update();
         myObstacles[i].y.update();
@@ -122,25 +152,26 @@
           myObstacles[i].speedY -= 1; /*speed of obstacles - subtracts 2 to y value to make it go up*/
           myObstacles[i].newPos();
           myObstacles[i].update();
-      }
-      if (myGameArea.key && myGameArea.key != 32) { /* not space bar */
+          var ax = alien.x;
+          var ay = alien.y;
+          var ox = myObstacles.x;
+          var oy = myObstacles.y;
+          if (oy == ay && ox == ax) {
+            scorenum ++;
+          }
+          else {
+            scorenum + 0;
+          }
       }
       if (myGameArea.key && myGameArea.key == 27) { /* stops when esc is pressed */
         myGameArea.stop();
       }
-      myScore.text="SCORE: " + myGameArea.frameNo;
+      myScore.text="SCORE: " + scorenum;
       myScore.update();
       myGamePiece.newPos();
       myGamePiece.update();
   }
-  /*
-  var number = 0;
-  function Score() {
-    if (myGamePiece.x == myObstacle.x && myGamePiece.x == myObstacle.y) {
-      number += 1;
-      myScore.text="SCORE: " + number;
-    }
-  } */
+
   </script>
 </head>
 <body onload="startGame()">
