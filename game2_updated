@@ -1,0 +1,178 @@
+<html>
+<head>
+  <title>FBLA Sewanhaka</title>
+  <link rel="stylesheet" type="text/css" href="game.css">
+  <style>
+  canvas {
+      border:1px solid #d3d3d3;
+      background-color: black;
+      padding: 0;
+      margin: auto;
+      display: block;
+    }
+  </style>
+  <script>
+
+  var myGamePiece;
+  var myScore;
+  var myObstacles = [];
+  var alien = [];
+  var stopbutton;
+  function startGame() {
+      stopbutton = new component("15px", "Consolas", "white", 850, 20, "text");
+      myGamePiece = new component(50, 50, "spaceship.png", 450, 500, "image");
+      myScore = new component("15px", "Consolas", "white", 450, 20, "text");
+      myGameArea.start();
+      /* myObstacle = new component(20, 20, "blue", 300, 0); */
+  }
+  var myGameArea = {
+      canvas : document.createElement("canvas"),
+      start : function() {
+          this.canvas.width = 900;
+          this.canvas.height = 600;
+          this.context = this.canvas.getContext("2d");
+          document.body.insertBefore(this.canvas, document.body.childNodes[0]);
+          this.frameNo = 0;
+/*checks if a key is pressed. when key is not pressed, "key" is set to false*/
+          this.interval = setInterval(updateGameArea, 20); /*updates display
+          every 20th millisecond aka 50 times per second*/
+                window.addEventListener('keydown', function (e) { /* sets keyboard as controller */
+                    myGameArea.key = e.keyCode;
+                })
+                window.addEventListener('keyup', function (e) { /* doesnt move when key isn't pressed */
+                    myGameArea.key = false;
+                })
+            },
+            clear : function() {
+                this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+            },
+            stop : function() {
+                clearInterval(this.interval);
+            }
+        }
+/*end of key pressed defining*/
+  function everyinterval(n) {
+      if ((myGameArea.frameNo / n) % 1 == 0) {return true;}
+      return false;
+  }
+/*appearance and movement of sprite*/
+  function component(width, height, color, x, y, type) {
+    this.type = type;
+  if (type == "image") { /*both if statements about image type is necessary*/
+      this.image = new Image();
+      this.image.src = color;
+  }
+    this.gamearea = myGameArea;
+    this.width = width;
+    this.height = height;
+    this.speedX = 0;
+    this.speedY = 0;
+    this.x = x;
+    this.y = y;
+    this.update = function() {
+      ctx = myGameArea.context;
+      if (type == "image") {
+          ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
+      }
+      else if (this.type == "text") {
+          ctx.font = this.width + " " + this.height;
+          ctx.fillStyle = color;
+          ctx.fillText(this.text, this.x, this.y);
+      }
+      else {
+          ctx.fillStyle = color;
+          ctx.fillRect(this.x, this.y, this.width, this.height);
+      }
+  }
+        /*speed is changing by 1 per movement*/
+    this.newPos = function() {
+        this.x += this.speedX; /* this.x = this.x + this.speedx */
+        this.y += this.speedY;
+    }
+    this.crashWith = function(otherobj) {
+      var myleft = this.x;
+      var myright = this.x + (this.width);
+      var mytop = this.y;
+      var mybottom = this.y + (this.height);
+      var otherleft = otherobj.x;
+      var otherright = otherobj.x + (otherobj.width);
+      var othertop = otherobj.y;
+      var otherbottom = otherobj.y + (otherobj.height);
+      var crash = true;
+      if ((mybottom < othertop) ||
+             (mytop > otherbottom) ||
+             (myright < otherleft) ||
+             (myleft > otherright)) {
+         crash = false;
+      }
+      return crash;
+  }
+}
+    /*movement of sprite*/
+    function updateGameArea() {
+    var x, y;
+    var hide = false;
+    myGameArea.clear();
+    myGameArea.frameNo += 1;
+    if (myGameArea.frameNo == 1) { /*OBSTACLE movement*/
+        x = 0;
+        y = 40;
+        alien.push(new component(35, 35, "alien.png", x, y, "image"));
+        while (x < 900) {
+          x += 30;
+          alien.push(new component(35, 35, "alien.png", x, y, "image"));
+        }
+    }
+    for (i = 0; i < alien.length; i++) {
+      if (everyinterval(250)){
+      alien[i].y += 20;
+      }
+      if (alien[i].y > 475) {
+        myGameArea.stop();
+      }
+      /* for (j = 0; j < myObstacle.length; j++) {
+        if (alien.[i].y = myObstacle[i].y && alien[i].x = myObstacle[i].y) {
+          alien[i].style.display = "none";
+        }
+      }*/
+      alien[i].update();
+      alien[i].newPos();
+      }
+    myGamePiece.speedX = 0;
+    myGamePiece.speedY = 0;
+    if (myGameArea.key && myGameArea.key == 37) {myGamePiece.speedX = -1; }
+    if (myGameArea.key && myGameArea.key == 39) {myGamePiece.speedX = 1; }
+    if (myGameArea.key && myGameArea.key == 32) { /* space bar */
+      x = myGamePiece.x + 18; /*sets x to ship's x + 20*/
+      y = 500;
+      myObstacles.push(new component(15, 15, "lightgreen", x, y));
+      myObstacles[i].update();
+      myGamePiece.update();
+      myObstacles[i].y.update();
+    }
+    for (i = 0; i < myObstacles.length; i += 1) {
+        myObstacles[i].speedY -= 1; /*speed of obstacles - subtracts 2 to y value to make it go up*/
+        myObstacles[i].newPos();
+        myObstacles[i].update();
+        var ax = alien.x;
+        var ay = alien.y;
+        var ox = myObstacles.x;
+        var oy = myObstacles.y;
+    }
+    if (myGameArea.key && myGameArea.key == 27) { /* stops when esc is pressed */
+      myGameArea.stop();
+    }
+    stopbutton.text = "stop";
+
+    stopbutton.update();
+    myScore.text="SCORE: " + myGameArea.frameNo;
+    myScore.update();
+    myGamePiece.newPos();
+    myGamePiece.update();
+  }
+  </script>
+</head>
+<body onload="startGame()">
+
+</body>
+</html>
