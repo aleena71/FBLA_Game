@@ -10,11 +10,22 @@
   </style>
   <script>
     var myGamePiece;
-    var myScore;
-    var myObstacles = [];
+    var allienc;
+    var alien = [];
+    var balien = [];
+    var ufo = [];
+    var aliencount = 1;
+    var end;
+    var score;
+    var finalscore;
+    var playagain;
     function startGame() {
-        myGamePiece = new component(50, 50, "sman.png", 20, 120, "image");
-        myScore = new component("15px", "Consolas", "white", 450, 40, "text");
+        myGamePiece = new component(50, 50, "spaceship.png", 450, 500, "image");
+        allienc = new component("15px", "Consolas", "white", 725, 30, "text");
+        score = new component("15px", "Consolas", "white", 725, 60, "text");
+        end = new component("30px", "Consolas", "white", 350, 200, "text");
+        finalscore = new component("30px", "Consolas", "white", 300, 240, "text");
+        playagain = new component("30px", "Consolas", "white", 300, 280, "text");
         myGameArea.start();
         /* myObstacle = new component(20, 20, "blue", 300, 0); */
     }
@@ -82,52 +93,113 @@
           this.x += this.speedX; /* this.x = this.x + this.speedx */
           this.y += this.speedY;
       }
+      this.crashWith = function(otherobj) {
+        var myleft = this.x;
+        var myright = this.x + (this.width);
+        var mytop = this.y;
+        var mybottom = this.y + (this.height);
+        var otherleft = otherobj.x;
+        var otherright = otherobj.x + (otherobj.width);
+        var othertop = otherobj.y;
+        var otherbottom = otherobj.y + (otherobj.height);
+        var crash = true;
+        if ((mybottom < othertop) ||
+               (mytop > otherbottom) ||
+               (myright < otherleft) ||
+               (myleft > otherright)) {
+           crash = false;
+        }
+        return crash;
+    }
   }
       /*movement of sprite*/
       function updateGameArea() {
       var x, y;
       myGameArea.clear();
       myGameArea.frameNo += 1;
-      if (myGameArea.frameNo == 1 || everyinterval(150)) { /*OBSTACLE movement*/
-            x = Math.floor((Math.random() * 900) + 1); /*sets x to random digit between 1 - 900*/
+      if (myGameArea.frameNo == 1 || everyinterval(75)) { /*OBSTACLE movement*/
+            x = Math.floor((Math.random() * 875) + 1); /*sets x to random digit between 1 - 900*/
             y = 0; /*falling obstacles will start from top and continute to bottom*/
-            myObstacles.push(new component(20, 20, "green", x, y));
+            alien.push(new component(35, 35, "alien.png", x, y, "image"));
+
+          }
+          if (myGameArea.frameNo == 1 || everyinterval(150)) {
+            x = Math.floor((Math.random() * 875) + 1); /*sets x to random digit between 1 - 900*/
+            y = 0;
+            balien.push(new component(35, 35, "alien2.png", x, y, "image"));
+          }
+          if (myGameArea.frameNo == 500 || everyinterval(500)) {
+            x = Math.floor((Math.random() * 875) + 1); /*sets x to random digit between 1 - 900*/
+            y = 0;
+            ufo.push(new component(35, 35, "ufo.png", x, y, "image"));
+          }
+        for (i = 0; i < alien.length; i += 1) {
+            alien[i].y += 2; /*soeed of obstacles - adds 2 to y value*/
+            alien[i].update();
+            if (alien[i].y == myGamePiece.y) {
+              if (alien[i].x <= myGamePiece.x + 10 && alien[i].x >= myGamePiece.x - 10) {
+              aliencount += 1;
+              aliencount.update();
+            }
+            }
         }
-        for (i = 0; i < myObstacles.length; i += 1) {
-            myObstacles[i].y += 2; /*soeed of obstacles - adds 2 to y value*/
-            myObstacles[i].update();
+        for (i = 0; i < balien.length; i += 1) {
+            balien[i].y += 2; /*soeed of obstacles - adds 2 to y value*/
+            balien[i].update();
+            if (balien[i].y == myGamePiece.y) {
+              if (balien[i].x <= myGamePiece.x + 10 && balien[i].x >= myGamePiece.x - 10) {
+              aliencount -= 1;
+              aliencount.update();
+            }
+          }
+        }
+        for (i = 0; i < ufo.length; i += 1) {
+            ufo[i].y += 2; /*soeed of obstacles - adds 2 to y value*/
+            ufo[i].update();
+            if (ufo[i].y == myGamePiece.y) {
+              if (ufo[i].x <= myGamePiece.x + 10 && ufo[i].x >= myGamePiece.x - 10) {
+              aliencount += 5;
+              aliencount.update();
+            }
+          }
         }
       myGamePiece.speedX = 0;
       myGamePiece.speedY = 0;
-      if (myGameArea.key && myGameArea.key == 37) {myGamePiece.speedX = -1; }
-      if (myGameArea.key && myGameArea.key == 39) {myGamePiece.speedX = 1; }
-      if (myGameArea.key && myGameArea.key == 38) {myGamePiece.speedY = -1; }
-      if (myGameArea.key && myGameArea.key == 40) {myGamePiece.speedY = 1; }
-      if (myGameArea.key && myGameArea.key == 32) { /* space bar */
-        myGamePiece.image.src = "rmr.png";
-      }
-      if (myGameArea.key && myGameArea.key != 32) { /* not space bar */
-        myGamePiece.image.src = "sman.png";
-      }
+      if (myGameArea.key && myGameArea.key == 37) {myGamePiece.speedX = -2; }
+      if (myGameArea.key && myGameArea.key == 39) {myGamePiece.speedX = 2; }
+
       if (myGameArea.key && myGameArea.key == 27) { /* stops when esc is pressed */
         myGameArea.stop();
       }
-      myScore.text="SCORE: " + myGameArea.frameNo;
-      myScore.update();
+      if (aliencount < 1) {
+        myGameArea.stop();
+        end.text = "GAME OVER";
+        end.update();
+        finalscore.text = "FINAL SCORE: " + myGameArea.frameNo;
+        finalscore.update();
+        playagain.text = "PLAY AGAIN";
+        playagain.update();
+        if (myGameArea.key && myGameArea.key == 13) { /* enter key */
+          myGameArea.clear();
+          myGameArea.start();
+        }
+
+      }
+      allienc.text="ALIEN COUNT: " + aliencount;
+      allienc.update();
+      score.text="SCORE: " + myGameArea.frameNo;
+      score.update();
       myGamePiece.newPos();
       myGamePiece.update();
   }
-  /*
-  var number = 0;
-  function Score() {
-    if (myGamePiece.x == myObstacle.x && myGamePiece.x == myObstacle.y) {
-      number += 1;
-      myScore.text="SCORE: " + number;
-    }
-  } */
   </script>
 </head>
 <body onload="startGame()">
-
+green alien = +1 alien count<br>
+purple alien = -1 alien count<br>
+UFO = +5 alien count<br>
+The game starts with an alien count of 1<br>
+The game ends when you have 0 alien count<br>
+Your score depends on how long your game lasted
 </body>
 </html>
